@@ -1,0 +1,129 @@
+class Student:
+    def __init__(self, name):
+        self.name = name
+        self.grades = []  
+
+    def add_grade(self, grade):
+        if isinstance(grade, (int, float)) and 0 <= grade <= 100:
+            self.grades.append(grade)
+            print(f"\n[+] Successfully added grade {grade} for {self.name}.")
+        else:
+            print("\n[!] Invalid grade. Please enter a number between 0 and 100.")
+
+    def average(self):
+        if not self.grades:
+            return 0.0  
+        return sum(self.grades) / len(self.grades)
+
+    def letter_grade(self):
+        avg = self.average()
+        if not self.grades:
+            return 'N/A' # If they have no grades, they don't have a letter grade
+        elif avg >= 90:
+            return 'A'
+        elif avg >= 80:
+            return 'B'
+        elif avg >= 70:
+            return 'C'
+        elif avg >= 60:
+            return 'D'
+        else:
+            return 'F'
+
+    def __str__(self):
+        avg = self.average()
+        letter = self.letter_grade()
+        return f"{self.name} | Average: {avg:.1f} | Grade: {letter} | Past Scores: {self.grades}"
+
+
+class Gradebook:
+    def __init__(self):
+        self.list_of_students = []
+
+    def add_student(self, student):
+        self.list_of_students.append(student)
+        print(f"\n[+] Successfully added student '{student.name}' to the gradebook.")
+
+    def find_student(self, name):
+        for student in self.list_of_students:
+            if student.name.lower() == name.lower():
+                return student
+        print(f"\n[-] Error: Student '{name}' not found in the gradebook.")
+        return None
+
+    def list_all_students(self):
+        print("\n--- Current Gradebook ---")
+        if not self.list_of_students:
+            print("No students enrolled.")
+        else:
+            for student in self.list_of_students:
+                print(student)
+        print("-------------------------")
+
+
+
+# Interactive User Menu
+
+if __name__ == "__main__":
+    my_gradebook = Gradebook()
+
+    # Pre-load students and grades silently
+    alice = Student("Alice")
+    alice.grades = [95, 88, 92]
+    my_gradebook.list_of_students.append(alice)
+
+    bob = Student("Bob")
+    bob.grades = [75, 60, 81]
+    my_gradebook.list_of_students.append(bob)
+    
+    charlie = Student("Charlie")
+    my_gradebook.list_of_students.append(charlie) # Charlie has no grades yet
+
+    while True:
+        print("\n=== Gradebook Menu ===")
+        print("1. Add a new student")
+        print("2. Add a grade for a student")
+        print("3. View the whole gradebook")
+        print("4. Quit")
+        
+        choice = input("\nWhat would you like to do? (Enter 1-4): ").strip()
+
+        if choice == '1':
+            name = input("Enter the student's name: ").strip()
+            
+            if not name:
+                print("\n[!] No name entered. Canceling and returning to menu...")
+                continue
+                
+            new_student = Student(name)
+            my_gradebook.add_student(new_student)
+
+        elif choice == '2':
+            name = input("Enter the name of the student to grade: ").strip()
+            if not name:
+                print("\n[!] No name entered. Canceling...")
+                continue
+                
+            # First, find the student object
+            found_student = my_gradebook.find_student(name)
+            
+            # If the student exists, ask for the grade
+            if found_student:
+                grade_input = input(f"Enter the numerical grade for {found_student.name} (0-100): ").strip()
+                
+                # We use a try/except block just in case the user types a letter instead of a number
+                try:
+                    grade = float(grade_input)
+                    found_student.add_grade(grade)
+                except ValueError:
+                    print("\n[!] Error: You must enter a valid number.")
+
+        elif choice == '3':
+            my_gradebook.list_all_students()
+
+        elif choice == '4':
+            print("\nClass dismissed! Thanks for using the gradebook.")
+            break 
+
+        else:
+            print("\n[!] Invalid choice. Please type a number between 1 and 4.")
