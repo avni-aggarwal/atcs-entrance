@@ -1,0 +1,108 @@
+class Book:
+    def __init__(self, title, author="Unknown"):
+        self.title = title
+        self.author = author
+        self.is_checked_out = False 
+
+    def __str__(self):
+        status = "Checked Out" if self.is_checked_out else "Available"
+        return f"'{self.title}' by {self.author} ({status})"
+
+
+class Library:
+    def __init__(self):
+        self.list_of_books = []
+
+    def add_book(self, book):
+        self.list_of_books.append(book)
+        print(f"\n[+] Successfully added '{book.title}' to the library.")
+
+    def checkout_book(self, title):
+        for book in self.list_of_books:
+            if book.title.lower() == title.lower():
+                if book.is_checked_out:
+                    print(f"\n[-] Sorry, '{book.title}' is already checked out.")
+                    return
+                else:
+                    book.is_checked_out = True
+                    print(f"\n[+] Success! You have checked out '{book.title}'.")
+                    return
+        print(f"\n[!] Error: Could not find a book titled '{title}'.")
+
+    def return_book(self, title):
+        for book in self.list_of_books:
+            if book.title.lower() == title.lower():
+                if book.is_checked_out:
+                    book.is_checked_out = False
+                    print(f"\n[+] Success! You have returned '{book.title}'.")
+                    return
+                else:
+                    print(f"\n[-] '{book.title}' was not checked out.")
+                    return
+        print(f"\n[!] Error: Could not find a book titled '{title}'.")
+
+    def list_books(self):
+        print("\n--- Library Catalog ---")
+        if not self.list_of_books:
+            print("The library is currently empty.")
+        else:
+            for book in self.list_of_books:
+                print(book)
+        print("-----------------------")
+
+
+
+# Interactive User Menu
+
+if __name__ == "__main__":
+    my_library = Library()
+    
+    # Pre-load books
+    my_library.list_of_books.append(Book("1984", "George Orwell"))
+    my_library.list_of_books.append(Book("The Hobbit", "J.R.R. Tolkien"))
+    my_library.list_of_books.append(Book("To Kill a Mockingbird", "Harper Lee"))
+    my_library.list_of_books.append(Book("Harry Potter and the Sorcerer's Stone", "J.K. Rowling"))
+    my_library.list_of_books.append(Book("The Great Gatsby", "F. Scott Fitzgerald"))
+    my_library.list_of_books.append(Book("Pride and Prejudice", "Jane Austen"))
+
+    while True:
+        print("\n=== Main Menu ===")
+        print("1. Add a new book")
+        print("2. List all books")
+        print("3. Check out a book")
+        print("4. Return a book")
+        print("5. Quit")
+        
+        choice = input("\nWhat would you like to do? (Enter 1-5): ").strip()
+
+        if choice == '1':
+            title = input("Enter the book's title (name): ").strip()
+            
+            if not title:
+                print("\n[!] No title entered. Canceling and returning to menu...")
+                continue
+            
+            author = input("Enter the author's name (or press Enter to skip): ").strip()
+            if not author:
+                author = "Unknown"
+                
+            new_book = Book(title, author)
+            my_library.add_book(new_book)
+
+        elif choice == '2':
+            my_library.list_books()
+
+        elif choice == '3':
+            title = input("Enter the title of the book you want to check out: ").strip()
+            my_library.checkout_book(title)
+
+        elif choice == '4':
+            title = input("Enter the title of the book you want to return: ").strip()
+            my_library.return_book(title)
+
+        elif choice == '5':
+            print("\nGoodbye! Thanks for visiting the library.")
+            break 
+
+        else:
+            print("\n[!] Invalid choice. Please type a number between 1 and 5.")
